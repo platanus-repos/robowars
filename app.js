@@ -4,6 +4,7 @@
 
 var express = require('express'),
 	routes = require('./routes');
+	game = require('./game');
 
 var app = module.exports = express.createServer();
 var io = require('socket.io').listen(app);
@@ -34,11 +35,11 @@ app.listen(3000);
 
 // Game socket logic (managing).
 
-var gameCount = 0, games = { '0': new Game() };
+var gameCount = 0, games = { '0': new game.Game() };
 
 io.of('/api/game').on('connection', function (socket) {
 
-	var player = new Player(socket); // initialize player
+	var player = new game.Player(socket); // initialize player
 
 	// Create a new game.
 	socket.on('create', function() {
