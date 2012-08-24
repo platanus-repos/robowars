@@ -58,7 +58,6 @@ Game.prototype = {
 		var dump = this._dumpState();
 	},
 	_dumpState: function() {
-
 		for(var i = 0; i < this._actors.length; i++) {
 
 		}
@@ -89,13 +88,15 @@ Player.prototype = {
 		if(this._game && this._sequence == _sequence) {
 			for(var i = 0; i < _actions.length; i++) {
 				switch(_action[i].type) {
-				case: 'new':
-					if(_action[i].name
-					this._robots[_] = this._game.addActor(new Robot());
-				case: 'robot_accel':
-				case: 'robot_dir':
+				case 'new':
+					// if(_action[i].name
+					// this._robots[_] = this._game.addActor(new Robot());
+				break;
+				case 'robot_accel':
+				break;
+				case 'robot_dir':
+				break;
 				default:
-
 				}
 			}
 
@@ -121,6 +122,5 @@ Robot.prototype = {
 };
 
 // Define exports.
-exports.Game = Game
-exports.Player = Player
-exports.Robot = Robot
+exports.Game = Game;
+exports.Player = Player;
