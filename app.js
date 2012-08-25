@@ -54,8 +54,8 @@ io.of('/api/game').on('connection', function (socket) {
 	});
 
 	// Player actions are executed.
-	socket.on('actions', function(_sequence, _actions) {
-		player.pushActions(_sequence, _actions);
+	socket.on('actions', function(_actions) {
+		player.pushActions(_actions);
 	});
 
 	// When disconnected close player.
