@@ -1,12 +1,15 @@
 robotFactory = function(_actionStack) {
 
-	var seq = 0;
+	var robots = [];
 
-	var Robot = function() {
+	var Robot = function(name) {
 		this._power = 0;
 		this._direction = 0;
-		this.name = 'robot_' + seq++;
-		_actionStack.addNewRobot(this.name);
+		this.name = name;
+		if(robots.indexOf(name) < 0) {
+			robots.push(name); 
+			_actionStack.addNewRobot(this.name);
+		}
 	};
 
 	Robot.prototype = {

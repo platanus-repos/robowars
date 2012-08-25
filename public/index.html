@@ -20,7 +20,6 @@
   	actionStack = new ActionStack();
 
     Robot = robotFactory(actionStack);
-    robot = new Robot();
     interpreter = new Interpreter();
       
 	$(function() {
@@ -45,7 +44,7 @@
 <button style="width:200px;height:90px" onclick="run()">Run !!</button>
 <textarea id="code" name="code" width="300" height="300">
 
-
+robot = new Robot("pedro");
 robot.setPower(10);
 robot.setAngle(20);
 </textarea>
