@@ -22,20 +22,21 @@ Player.prototype = {
 		var i, name, robot;
 		if(this._game) {
 			for(i = 0; i < _actions.length; i++) {
-				switch(_action[i].type) {
+				switch(_actions[i].type) {
 				case 'new':
-					name = _action[i].name;
+					name = _actions[i].name;
 					if(!this._robots[name]) {
-						this._robots[name] = this._game.addActor(new Robot(0, 0));
+						this._robots[name] = this._game.addActor(new Robot(50, 50));
 					}
+					console.log("created a roboooot");
 					break;
 				case 'robot_power':
-					robot = this._robots[_action[i].name];
-					robot.power = _action[i].value;
+					robot = this._robots[_actions[i].name];
+					robot.power = _actions[i].value;
 					break;
 				case 'robot_dir':
-					robot = this._robots[_action[i].name];
-					robot.angle = _action[i].value;
+					robot = this._robots[_actions[i].name];
+					robot.angle = _actions[i].value;
 					break;
 				default:
 				}
@@ -44,11 +45,15 @@ Player.prototype = {
 			// TODO: Report errors back.
 
 			// Sync with game.
-			this._sequence = this._game.sync(this._sequence);
+			//OJO PIXAR: ESTA WEA LA "ARREGLÉ" YO SIN TENER IDEA. 
+			// aca decía this._sequence = this._game.sync(this._sequence);
+			//LA FUNCION sync de Game no existía y yo le puse que llamara a signal()..
+			this._sequence = this._game.signal(this._sequence);
 			if(this._sequence === false) { // Syncing failed, leave game.
-				this._game.removeEndpoint(this._socket);
-				this._game.leave();
-				this._game = null;
+				//this._game.removeEndpoint(this._socket);
+				///this._game.leave();
+				//this._game = null;
+				console.log("Todo mal sincronizado pelado.");
 				// TODO: notify user.
 			}
 		}
@@ -62,7 +67,7 @@ var Game = function(_map, _rules) {
 	this._sequence = 0;
 	this._players = 0;
 	this._signals = 0;
-
+	this._ticks = 0;
 	// Simulation values.
 	this._width = 200;
 	this._height = 200;
@@ -94,10 +99,12 @@ Game.prototype = {
 	signal: function(_sequence) {
 		if(_sequence != this._sequence) return false; // If player out of sync, return false.
 		this._signals++;
-		if(this._signals >= this._players) this._tick();
+		if(this._signals >= this._players) return this._tick();
+
 	},
 	_tick: function() {
 		// TODO: make sure at least N sec has transcurred.
+		
 		// Update actors
 		var i, j, dump,
 			now = (new Date()).getTime(),
@@ -119,6 +126,7 @@ Game.prototype = {
 		this._sequence++;
 		this._signals = 0;
 		this._lastTime = delta;
+		return this._sequence;
 	},
 	_dumpState: function() {
 		var result = [];
@@ -139,6 +147,7 @@ var Robot = function(_x, _y) {
 	this.speed = 0;
 	this.power = 0;
 	this.angle = 0;
+	this.size = 50;
 };
 
 Robot.prototype = {
