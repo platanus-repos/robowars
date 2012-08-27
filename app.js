@@ -39,7 +39,12 @@ var gameCount = 0, games = { '0': new game.Game() };
 
 io.of('/api/game').on('connection', function (socket) {
 
-	var player = new game.Player(socket); // initialize player
+	var player = new game.Seat(socket); // initialize player
+
+	// Initialize player (this MUST be called first)
+	socket.on('init', function(_playerId) {
+		player.setId(_playerId);
+	});
 
 	// Create a new game.
 	socket.on('create', function() {
