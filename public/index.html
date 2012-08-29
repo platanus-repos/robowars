@@ -1,69 +1,77 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>RoboWARS!</title>
-	<meta charset="utf-8">
-    <link rel="stylesheet" href="./codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="./codemirror/theme/blackboard.css">
-    <script src="./codemirror/lib/codemirror.js"></script>
+	<head>
+		<title>RoboWARS! - Live Exec Version</title>
+		<meta charset="utf-8">
+	    <link rel="stylesheet" href="./codemirror/lib/codemirror.css">
+	    <link rel="stylesheet" href="./codemirror/theme/blackboard.css">
+	    <script src="./codemirror/lib/codemirror.js"></script>
 
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
-	<script type="text/javascript" src="scripts/interpreter.js"></script>
-	<script type="text/javascript" src="scripts/robot.js"></script>
-	<script type="text/javascript" src="scripts/action_stack.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
+		<script type="text/javascript" src="scripts/interpreter.js"></script>
+		<script type="text/javascript" src="scripts/sandbox.js"></script>
+		<script type="text/javascript" src="scripts/actors.js"></script>
+		<script type="text/javascript" src="scripts/factory.js"></script>
 
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+		$(function() {
 
-  	actionStack = new ActionStack();
+			// the game context (initialized on join)
+			var context = null;
 
-    Robot = robotFactory(actionStack);
-    interpreter = new Interpreter();
-      
-	$(function() {
+			// configure interpreter
+			var interpreter = new Interpreter(document.getElementById("code"));
 
-		var socket = io.connect('http://localhost/api/game');
-		socket.on('connect', function () {
-			socket.emit('join');
-
-			// Called when a new game state is avaliable.
-			socket.on('state', function (state) {
-				interpreter.draw(state);
-				socket.emit('actions',actionStack.flush());
-				run();
+			// configure editor
+			var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+				lineNumbers: 	true,
+				mode: 			"javascript",
+				matchBrackets: 	true,
+				theme: 			"blackboard"
 			});
-	    });
-	});
 
-	</script>
-</head>
-<body>
-<canvas id="canvas" width="600" height="300"></canvas>
-<button style="width:200px;height:90px" onclick="run()">Run !!</button>
-<textarea id="code" name="code" width="300" height="300">
+			// start game (connect)
+			var socket = io.connect('http://localhost/api/game');
+			socket.on('connect', function () {
 
-robot = new Robot("pedro");
-robot.setPower(10);
-robot.setAngle(20);
-</textarea>
+				// TODO: Interactively join a game and select a user name
+				socket.emit('init', function(_name) {
 
+					// Initialize new game context.
+					context = new RobotWars.Sandbox(_name);
+					context.helper('Factory', new RobotWars.Factory(context));
+					context.helper('log', function(_data) {
+						console.log(_data);
+					});
 
-	<script>
-      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-        lineNumbers: true,
-        mode:"javascript",
-        matchBrackets: true, 
-        theme:"blackboard"
-      });
-    
+					socket.emit('join');
+				});
 
-	function run()
-	{
-		eval(editor.getValue());
-	}
-
-    </script>
-</body>
+				// Called when a new game state is avaliable.
+				socket.on('state', function(_state) {
+					interpreter.draw(_state);
+					// TODO: Set game pace, use setTimeout with a delta
+					if(context) {
+						context.update(_state);
+						socket.emit('actions', context.flush());
+						var toEval = editor.getValue();
+						try { context.evaluate(toEval); }
+						catch(exc) { console.log(exc); }
+					}
+				});
+		    });
+		});
+		</script>
+	</head>
+	<body>
+		<canvas id="canvas" width="600" height="300"></canvas>
+		<textarea id="code" name="code" width="300" height="300">
+			var robot = Factory.robot("pedrobot");
+			robot.setPower(10);
+			//robot.setDirection(20);
+		</textarea>
+	</body>
 </html>

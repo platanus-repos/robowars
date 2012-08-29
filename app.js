@@ -35,15 +35,17 @@ app.listen(3000);
 
 // Game socket logic (managing).
 
-var gameCount = 0, games = { '0': new game.Game() };
+var gameCount = 0, games = { '0': new game.Game() }, playerSeq = 0;
 
 io.of('/api/game').on('connection', function (socket) {
 
 	var player = new game.Seat(socket); // initialize player
 
 	// Initialize player (this MUST be called first)
-	socket.on('init', function(_playerId) {
-		player.setId(_playerId);
+	socket.on('init', function(_fn) {
+		var playerId = 'guest_' + playerSeq++;
+		if(_fn) _fn(playerId);
+		player.identify(playerId);
 	});
 
 	// Create a new game.

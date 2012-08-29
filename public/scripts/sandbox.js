@@ -4,23 +4,21 @@
 
 (function($, undefined) {
 
+RobotWars = {};
+
 /**
  * Keeps player and server objects synchronized and provides
  * a sandbox enviroment for player scripts.
  */
-RW.Sandbox = function(_playerId) {
+RobotWars.Sandbox = function(_playerId) {
 	this._player = _playerId;
 	this._seq = 0;
 	this._actors = {};
 	this._stack = [];
-	this._exeCtx = {
-		'Robot': robotFactory(this),
-		// 'Wall': wallFactory(this),
-		objects: []
-	};
+	this._exeCtx = { objects: [] };
 };
 
-RW.Sandbox.prototype = {
+RobotWars.Sandbox.prototype = {
 	/**
 	 * Evaluates a user's script in the current sandbox context.
 	 * @param  {string} _script Script to evaluate
@@ -32,11 +30,20 @@ RW.Sandbox.prototype = {
 	},
 
 	/**
+	 * Adds a helper function to the execution context
+	 * @param {String} _name   function name
+	 * @param {function} _helper
+	 */
+	helper: function(_name, _helper) {
+		this._exeCtx[_name] = _helper;
+	},
+
+	/**
 	 * Synchronizes the sandbox state with the current server state.
 	 * @param  {Array} _objects Server state (list of entities)
 	 */
-	updateState: function(_objects) {
-		this._playerCtx.objects = _objects;
+	update: function(_objects) {
+		this._exeCtx.objects = _objects;
 		// Update actors based on new state.
 		for(var i = 0; i < _objects.length; i++) {
 			if(_objects[i].player == this._player) {
@@ -58,6 +65,7 @@ RW.Sandbox.prototype = {
 	},
 
 	/// ACTOR SUPPORT
+	//
 	// The following methods are used internally by actor objects to
 	// reflect user actions on game state.
 
@@ -71,9 +79,9 @@ RW.Sandbox.prototype = {
 		var name = 'act_' + this._seq++;
 		this._actors[name] = _actor;
 		this._stack.push({
-			type: 'new',
-			actor: _type,
-			name: name
+			name: name,
+			action: 'new',
+			actor: _type
 		});
 		return name;
 	},
@@ -86,9 +94,9 @@ RW.Sandbox.prototype = {
 	 */
 	setActorProp: function(_name, _prop, _value) {
 		this._stack.push({
-			type: _prop,
 			name: _name,
-			value: _power
+			action: _prop,
+			value: _value
 		});
 	}
 };

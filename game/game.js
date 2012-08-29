@@ -45,7 +45,7 @@ Game.prototype = {
 	},
 	/**
 	 * Adds a simulation actor.
-	 * @param {mixed} _actor Every actor mus provide an update and a toHash method.
+	 * @param {mixed} _actor Every actor must provide an update and a toHash method.
 	 */
 	addActor: function(_actor) {
 		this._actors.push(_actor);
@@ -78,7 +78,7 @@ Game.prototype = {
 		{
 			// TODO: remove related actors!
 			delete this._players[_playerId];
-			this._players--;
+			this._playerCount--;
 			if(this._pokes >= this._players) this._tick();
 		}
 		else throw 'not_registered';

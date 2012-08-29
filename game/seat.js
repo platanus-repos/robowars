@@ -3,7 +3,7 @@
  * @author <a href="mailto:ignacio@platan.us">Ignacio Baixas</a>
  */
 
-var actors = require('./game/actor.js');
+var actors = require('./actor.js');
 
 /**
  * The seat class holds information about a player interaction with a game.
@@ -66,8 +66,9 @@ GameSeat.prototype = {
 		var i, name, robot;
 		if(this._game) {
 			for(i = 0; i < _actions.length; i++) {
-				switch(_actions[i].type) {
+				switch(_actions[i].action) {
 				case 'new':
+					console.log('creando robots!');
 					name = _actions[i].name;
 					if(!this._robots[name]) {
 						robot = new actors.Robot(this._id, name, 50, 50);
@@ -89,8 +90,7 @@ GameSeat.prototype = {
 			// TODO: Report errors back.
 
 			// Sync with game.
-			this._sequence = this._game.sync(this._sequence);
-			if(this._sequence === false) {
+			if(!this._game.poke(this._id)) {
 				// Syncing failed, leave game.
 				this._game.removeEndpoint(this._socket);
 				this._game.leave(this._id);
