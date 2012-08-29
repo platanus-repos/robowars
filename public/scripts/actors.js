@@ -6,6 +6,10 @@
 
 RobotWars.loadActorsForContext = function(_context) {
 
+	function isNumber(n) {
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	}
+
 	// The Robot class
 
 	var Robot = function() {
@@ -23,6 +27,7 @@ RobotWars.loadActorsForContext = function(_context) {
 		 * @param {[type]} _power [description]
 		 */
 		setPower: function(_power) {
+			if(!isNumber(_power)) throw 'invalid_value';
 			this._power = _power;
 			_context.setActorProp(this._actorId, 'robot_power', _power);
 		},
@@ -31,6 +36,7 @@ RobotWars.loadActorsForContext = function(_context) {
 		 * @param {[type]} _angle [description]
 		 */
 		setDirection: function(_angle) {
+			if(!isNumber(_angle)) throw 'invalid_value';
 			this._direction = _angle;
 			_context.setActorProp(this._actorId, 'robot_dir', _angle);
 		},

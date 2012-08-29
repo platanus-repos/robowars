@@ -53,13 +53,16 @@
 				// Called when a new game state is avaliable.
 				socket.on('state', function(_state) {
 					interpreter.draw(_state);
+
 					// TODO: Set game pace, use setTimeout with a delta
 					if(context) {
 						context.update(_state);
-						socket.emit('actions', context.flush());
-						var toEval = editor.getValue();
-						try { context.evaluate(toEval); }
-						catch(exc) { console.log(exc); }
+						setTimeout(function() {
+							var toEval = editor.getValue();
+							try { context.evaluate(toEval); }
+							catch(exc) { console.log(exc); }
+							socket.emit('actions', context.flush());
+						}, 100);
 					}
 				});
 		    });

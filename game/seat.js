@@ -3,7 +3,7 @@
  * @author <a href="mailto:ignacio@platan.us">Ignacio Baixas</a>
  */
 
-var actors = require('./actor.js');
+var Robot = require('./actors/robot.js').Robot;
 
 /**
  * The seat class holds information about a player interaction with a game.
@@ -14,7 +14,6 @@ var GameSeat = function(_socket) {
 	this._id = null;
 	this._socket = _socket;
 	this._game = null;
-	this._sequence = 0;
 	this._robots = {};
 };
 
@@ -37,7 +36,7 @@ GameSeat.prototype = {
 	joinGame: function(_game) {
 		if(!this._id) throw 'not_identified';
 		this._game = _game;
-		this._sequence = _game.enter(this._id);
+		_game.enter(this._id);
 		_game.addEndpoint(this._socket);
 	},
 	/**
@@ -71,15 +70,17 @@ GameSeat.prototype = {
 					console.log('creando robots!');
 					name = _actions[i].name;
 					if(!this._robots[name]) {
-						robot = new actors.Robot(this._id, name, 50, 50);
+						robot = new Robot(this._id, name, 50, 50);
 						this._robots[name] = this._game.addActor(robot);
 					}
 					break;
 				case 'robot_power':
+					// TODO: Validate name and value
 					robot = this._robots[_actions[i].name];
 					robot.power = _actions[i].value;
 					break;
 				case 'robot_dir':
+					// TODO: Validate name and value
 					robot = this._robots[_actions[i].name];
 					robot.angle = _actions[i].value;
 					break;

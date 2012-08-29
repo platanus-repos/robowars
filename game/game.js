@@ -79,7 +79,7 @@ Game.prototype = {
 			// TODO: remove related actors!
 			delete this._players[_playerId];
 			this._playerCount--;
-			if(this._pokes >= this._players) this._tick();
+			if(this._pokes >= this._playerCount) this._tick();
 		}
 		else throw 'not_registered';
 	},
@@ -93,8 +93,8 @@ Game.prototype = {
 		if(player && player.seq != this._sequence)
 		{
 			player.seq = this._sequence;
-			this._signals++;
-			if(this._signals >= this._players) this._tick();
+			this._pokes++;
+			if(this._pokes >= this._playerCount) this._tick();
 			return true;
 		}
 		else return false;
@@ -121,7 +121,7 @@ Game.prototype = {
 
 		// Reset signals.
 		this._sequence++;
-		this._signals = 0;
+		this._pokes = 0;
 		this._lastTime = delta;
 		return this._sequence;
 	},

@@ -1,5 +1,5 @@
 /**
- * @fileOverview Various game actor definitions.
+ * @fileOverview Robot class definition.
  * @author <a href="mailto:ignacio@platan.us">Ignacio Baixas</a>
  *
  * Actor classes should implement the following methods:
@@ -42,8 +42,8 @@ Robot.prototype = {
 	},
 	toHash: function() {
 		return {
-			playerId: this.playerId,
-			actorId: this.actorId,
+			player: this.playerId,
+			name: this.actorId,
 			type: 'robot',
 			size: this.size,
 			x: this.x,
@@ -55,4 +55,3 @@ Robot.prototype = {
 
 // EXPORTS
 exports.Robot = Robot;
-// exports.Bullet = Bullet;

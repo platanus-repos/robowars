@@ -44,8 +44,8 @@ io.of('/api/game').on('connection', function (socket) {
 	// Initialize player (this MUST be called first)
 	socket.on('init', function(_fn) {
 		var playerId = 'guest_' + playerSeq++;
-		if(_fn) _fn(playerId);
 		player.identify(playerId);
+		if(_fn) _fn(playerId);
 	});
 
 	// Create a new game.
@@ -56,12 +56,14 @@ io.of('/api/game').on('connection', function (socket) {
 
 	// Join an existing game.
 	socket.on('join', function() {
+		console.log('Se unió el sapo!');
 		player.leaveGame();
 		player.joinGame(games['0']);
 	});
 
 	// Player actions are executed.
 	socket.on('actions', function(_actions) {
+		console.log('Llegaron acciones!');
 		player.pushActions(_actions);
 	});
 
