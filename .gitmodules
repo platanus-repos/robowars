@@ -1,3 +1,6 @@
 [submodule "codemirror"]
 	path = codemirror
 	url = http://marijnhaverbeke.nl/git/codemirror
+[submodule "spritejs"]
+	path = spritejs
+	url = https://github.com/batiste/sprite.js.git
