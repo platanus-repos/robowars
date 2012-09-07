@@ -3,6 +3,8 @@
  * @author <a href="mailto:ignacio@platan.us">Ignacio Baixas</a>
  */
 
+var Box2D = require('box2d').Box2D;
+
 /**
  * The game class holds the status of a game and runs the game simulation.
  *
@@ -24,6 +26,8 @@ var Game = function(_map, _rules) {
 	this._height = 200;
 	this._actors = [];
 	this._lastTime = (new Date()).getTime();
+
+	this._world = Box2D.Dynamics.b2World(new Box2D.Common.Math.b2Vec2(0,0), true); // 0 gravity cause of top down view.
 };
 
 Game.prototype = {
@@ -111,9 +115,17 @@ Game.prototype = {
 			this._actors[i].update(delta, this._width, this._height);
 		}
 
-		// TODO: Collisions
+		// Update world.
+		this._world.Step(
+	      delta,	//frame-rate
+	      10,		//velocity iterations
+	      10		//position iterations
+	    );
+		this._world.ClearForces();
 
-		// Dump and notify
+		// Collect destroyed objects.
+
+		// Dump and notify.
 		dump = this._dumpState();
 		for(j = 0; j < this._endpoints.length; j++) {
 			this._endpoints[j].emit('state', dump);
