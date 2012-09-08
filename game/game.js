@@ -27,7 +27,8 @@ var Game = function(_map, _rules) {
 	this._actors = [];
 	this._lastTime = (new Date()).getTime();
 
-	this._world = Box2D.Dynamics.b2World(new Box2D.Common.Math.b2Vec2(0,0), true); // 0 gravity cause of top down view.
+	// Setup world.
+	this._world = new Box2D.Dynamics.b2World(new Box2D.Common.Math.b2Vec2(0,0), true); // 0 gravity cause of top down view.
 };
 
 Game.prototype = {
@@ -52,6 +53,7 @@ Game.prototype = {
 	 * @param {mixed} _actor Every actor must provide an update and a toHash method.
 	 */
 	addActor: function(_actor) {
+		_actor.materialize(this._world);
 		this._actors.push(_actor);
 		return _actor;
 	},
@@ -106,16 +108,16 @@ Game.prototype = {
 	_tick: function() {
 		// TODO: make sure at least N sec has transcurred.
 
-		// Update actors
 		var i, j, dump,
 			now = (new Date()).getTime(),
 			delta = Math.min(now - this._lastTime, 100) / 1000;
 
+		// prepare actors for next step.
 		for(i = 0; i < this._actors.length; i++) {
-			this._actors[i].update(delta, this._width, this._height);
+			this._actors[i].prepareBox(delta);
 		}
 
-		// Update world.
+		// update world.
 		this._world.Step(
 	      delta,	//frame-rate
 	      10,		//velocity iterations
