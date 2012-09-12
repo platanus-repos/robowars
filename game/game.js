@@ -3,7 +3,26 @@
  * @author <a href="mailto:ignacio@platan.us">Ignacio Baixas</a>
  */
 
-var Box2D = require('box2d').Box2D;
+var Box2D = require('box2d').Box2D,
+	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
+	b2Body = Box2D.Dynamics.b2Body,
+	b2BodyDef = Box2D.Dynamics.b2BodyDef,
+	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
+	b2Vec2 = Box2D.Common.Math.b2Vec2;
+
+// Scene body definition
+var WALLS_BODY = new b2BodyDef();
+WALLS_BODY.type = b2Body.b2_staticBody;
+WALLS_BODY.position.x = 0;
+WALLS_BODY.position.y = 0;
+
+// Scene fixture definition
+var WALLS_FIXTURE = new b2FixtureDef();
+WALLS_FIXTURE.density = 1;
+WALLS_FIXTURE.friction = 0.0;
+WALLS_FIXTURE.restitution = 1;
+WALLS_FIXTURE.shape = new b2PolygonShape();
+WALLS_FIXTURE.filter.categoryBits = 0x01;
 
 /**
  * The game class holds the status of a game and runs the game simulation.
@@ -22,13 +41,23 @@ var Game = function(_map, _rules) {
 	this._pokes = 0;
 
 	// Simulation values.
-	this._width = 200;
-	this._height = 200;
+	this._width = 20;
+	this._height = 20;
 	this._actors = [];
 	this._lastTime = (new Date()).getTime();
 
-	// Setup world.
-	this._world = new Box2D.Dynamics.b2World(new Box2D.Common.Math.b2Vec2(0,0), true); // 0 gravity cause of top down view.
+	// Setup world
+	this._world = new Box2D.Dynamics.b2World(new Box2D.Common.Math.b2Vec2(0, 0), true); // 0 gravity cause of top down view.
+
+	var worldWalls = this._world.CreateBody(WALLS_BODY);
+	WALLS_FIXTURE.shape.SetAsEdge(new b2Vec2(0, 0), new b2Vec2(20, 0));
+	worldWalls.CreateFixture(WALLS_FIXTURE);
+	WALLS_FIXTURE.shape.SetAsEdge(new b2Vec2(20, 0), new b2Vec2(20, 20));
+	worldWalls.CreateFixture(WALLS_FIXTURE);
+	WALLS_FIXTURE.shape.SetAsEdge(new b2Vec2(20, 20), new b2Vec2(0, 20));
+	worldWalls.CreateFixture(WALLS_FIXTURE);
+	WALLS_FIXTURE.shape.SetAsEdge(new b2Vec2(0, 20), new b2Vec2(0, 0));
+	worldWalls.CreateFixture(WALLS_FIXTURE);
 };
 
 Game.prototype = {
@@ -114,30 +143,26 @@ Game.prototype = {
 
 		// prepare actors for next step.
 		for(i = 0; i < this._actors.length; i++) {
-			this._actors[i].prepareBox(delta);
+			this._actors[i].beforeStep(delta);
 		}
 
 		// update world.
-		this._world.Step(
-	      delta,	//frame-rate
-	      10,		//velocity iterations
-	      10		//position iterations
-	    );
+		// TODO: delta should be fixed.
+		this._world.Step(delta,	10,	10);
 		this._world.ClearForces();
 
-		// Collect destroyed objects.
+		// TODO: Collect destroyed objects.
 
-		// Dump and notify.
+		// push new state to listeners
 		dump = this._dumpState();
 		for(j = 0; j < this._endpoints.length; j++) {
 			this._endpoints[j].emit('state', dump);
 		}
 
-		// Reset signals.
+		// reset player pokes.
 		this._sequence++;
 		this._pokes = 0;
 		this._lastTime = delta;
-		return this._sequence;
 	},
 	_dumpState: function() {
 		var result = [];

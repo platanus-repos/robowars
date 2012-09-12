@@ -62,7 +62,7 @@ GameSeat.prototype = {
 	 * @param {Array} _actions List of actions perform.
 	 */
 	pushActions: function(_actions) {
-		var i, name, robot;
+		var i, name, robot, errors = [];
 		if(this._game) {
 			for(i = 0; i < _actions.length; i++) {
 				switch(_actions[i].action) {
@@ -70,7 +70,7 @@ GameSeat.prototype = {
 					console.log('creando robots!');
 					name = _actions[i].name;
 					if(!this._robots[name]) {
-						robot = new Robot(this._id, name, 50, 50);
+						robot = new Robot(this._id, name, 10, 10);
 						this._robots[name] = this._game.addActor(robot);
 					}
 					break;
@@ -84,11 +84,19 @@ GameSeat.prototype = {
 					robot = this._robots[_actions[i].name];
 					robot.angle = _actions[i].value;
 					break;
+				case 'robot_fire':
+					// TODO: Validate name and value
+					robot = this._robots[_actions[i].name];
+					var bullet = robot.fire();
+					if(bullet) this._game.addActor(bullet);
+					break;
+				case 'robot_place':
+					break;
 				default:
 				}
 			}
 
-			// TODO: Report errors back.
+			// TODO: Report actions errors back.
 
 			// Sync with game.
 			if(!this._game.poke(this._id)) {

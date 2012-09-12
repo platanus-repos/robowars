@@ -22,6 +22,9 @@ RobotWars.loadActorsForContext = function(_context) {
 	};
 
 	Robot.prototype = {
+		fire: function() {
+			_context.setActorProp(this._actorId, 'robot_fire', null);
+		},
 		/**
 		 * Sets the robot power output.
 		 * @param {[type]} _power [description]

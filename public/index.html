@@ -9,9 +9,10 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
-		<script type="text/javascript" src="scripts/sprite.js"></script>
-		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-	    <script type="text/javascript" src="./codemirror/lib/codemirror.js"></script>
+
+		<script type="text/javascript" src="socket.io/socket.io.js"></script>
+	    <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
+	    <script type="text/javascript" src="spritejs/sprite.js"></script>
 
 		<script type="text/javascript" src="scripts/interpreter.js"></script>
 		<script type="text/javascript" src="scripts/sandbox.js"></script>
@@ -74,7 +75,7 @@
 		<canvas id="canvas" width="600" height="300"></canvas>
 		<textarea id="code" name="code" width="300" height="300">
 			var robot = Factory.robot("pedrobot");
-			robot.setPower(10);
+			//robot.setPower(10);
 			//robot.setDirection(20);
 		</textarea>
 	</body>
